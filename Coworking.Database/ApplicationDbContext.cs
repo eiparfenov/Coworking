@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Coworking.Test;
 
-public class TempDbContext: DbContext, IApplicationDbContext
+public class ApplicationDbContext: DbContext, IApplicationDbContext
 {
     public DbSet<Department> Departments { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
@@ -13,6 +13,13 @@ public class TempDbContext: DbContext, IApplicationDbContext
     public DbSet<Workplace> Workplaces { get; set; } = null!;
     public DbSet<Reservation> Reservations { get; set; } = null!;
     public DbSet<Rent> Rents { get; set; } = null!;
+
+    protected ApplicationDbContext()
+    {
+        Database.EnsureDeleted();
+        Database.EnsureCreated();
+        FillDb();
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
