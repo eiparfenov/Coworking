@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager _navManager
+
+<Layout>
+    <Header>
+        <Header>Панель администратора @RouteLink("Example")</Header>    
+    </Header>
+    <Layout>
+        <Sider>
+            <Menu Mode="MenuMode.Inline">
+                <MenuItem RouterLink=@RouteLink("EquipmentModels")>Модели оборудования</MenuItem>
+                <MenuItem RouterLink=@RouteLink("Equipments")>Единицы оборудования</MenuItem>
+                <MenuItem RouterLink=@RouteLink("Workplaces")>Рабочие места</MenuItem>
+            </Menu>
+        </Sider>
+        <Content>
+            @Body
+        </Content>
+    </Layout>
+</Layout>
+
+@code
+{
+    public string RouteLink(string table) => $"/{_navManager.Uri.Split("/")[3]}/Admin/{table}";
+    
+}

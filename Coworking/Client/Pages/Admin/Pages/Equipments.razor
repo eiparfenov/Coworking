@@ -1,0 +1,12 @@
+﻿@layout AdminMainLayout
+@page "/{department}/Admin/Equipments"
+
+<Paragraph>Equipments</Paragraph>
+<Paragraph>@Department</Paragraph>
+
+@code {
+
+    [Parameter]
+    public string Department { get; set; } = null!;
+
+}

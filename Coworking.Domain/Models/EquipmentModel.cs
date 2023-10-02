@@ -9,7 +9,6 @@ public class EquipmentModel
 
     public List<Equipment>? Equipments { get; set; }
     public List<Workplace>? Workplaces { get; set; }
-    
     public Department? Department { get; set; }
     public int DepartmentId { get; set; }
 }

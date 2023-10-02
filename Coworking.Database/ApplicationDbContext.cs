@@ -23,7 +23,7 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseInMemoryDatabase("test");
+        optionsBuilder.UseSqlite("data source=application.db");
     }
 /*
     protected override void OnModelCreating(ModelBuilder modelBuilder)
