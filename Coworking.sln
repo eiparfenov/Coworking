@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Server", "Coworking\Server\Coworking.Server.csproj", "{2792F4C5-6748-4DB6-B1F8-CA2E10B53078}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Client", "Coworking\Client\Coworking.Client.csproj", "{AB87DC35-55E6-441D-A0CD-5E8EE8FF4BB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Shared", "Coworking\Shared\Coworking.Shared.csproj", "{7EE2F550-5CC2-472C-998F-6E2D0702E107}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Domain", "Coworking.Domain\Coworking.Domain.csproj", "{4C7E404B-F9E9-4FE4-A0C0-23CB4872C116}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Logic", "Coworking.Logic\Coworking.Logic.csproj", "{ED228180-E76F-4A51-9574-0B933B9EDF6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Database", "Coworking.Database\Coworking.Database.csproj", "{E7141481-D0F2-437F-8A59-87B8F69188E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coworking.Test", "Coworking.Test\Coworking.Test.csproj", "{88B9412D-4448-4512-830C-F67009972689}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2792F4C5-6748-4DB6-B1F8-CA2E10B53078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2792F4C5-6748-4DB6-B1F8-CA2E10B53078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2792F4C5-6748-4DB6-B1F8-CA2E10B53078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2792F4C5-6748-4DB6-B1F8-CA2E10B53078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB87DC35-55E6-441D-A0CD-5E8EE8FF4BB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB87DC35-55E6-441D-A0CD-5E8EE8FF4BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB87DC35-55E6-441D-A0CD-5E8EE8FF4BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB87DC35-55E6-441D-A0CD-5E8EE8FF4BB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EE2F550-5CC2-472C-998F-6E2D0702E107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EE2F550-5CC2-472C-998F-6E2D0702E107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EE2F550-5CC2-472C-998F-6E2D0702E107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EE2F550-5CC2-472C-998F-6E2D0702E107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7E404B-F9E9-4FE4-A0C0-23CB4872C116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7E404B-F9E9-4FE4-A0C0-23CB4872C116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7E404B-F9E9-4FE4-A0C0-23CB4872C116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7E404B-F9E9-4FE4-A0C0-23CB4872C116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED228180-E76F-4A51-9574-0B933B9EDF6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED228180-E76F-4A51-9574-0B933B9EDF6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED228180-E76F-4A51-9574-0B933B9EDF6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED228180-E76F-4A51-9574-0B933B9EDF6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7141481-D0F2-437F-8A59-87B8F69188E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7141481-D0F2-437F-8A59-87B8F69188E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7141481-D0F2-437F-8A59-87B8F69188E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7141481-D0F2-437F-8A59-87B8F69188E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B9412D-4448-4512-830C-F67009972689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B9412D-4448-4512-830C-F67009972689}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B9412D-4448-4512-830C-F67009972689}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B9412D-4448-4512-830C-F67009972689}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
