@@ -2,7 +2,7 @@
 using Coworking.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Coworking.Test;
+namespace Coworking.Database;
 
 public class ApplicationDbContext: DbContext, IApplicationDbContext
 {
@@ -14,7 +14,7 @@ public class ApplicationDbContext: DbContext, IApplicationDbContext
     public DbSet<Reservation> Reservations { get; set; } = null!;
     public DbSet<Rent> Rents { get; set; } = null!;
 
-    protected ApplicationDbContext()
+    public ApplicationDbContext(DbContextOptions options) : base(options)
     {
         Database.EnsureDeleted();
         Database.EnsureCreated();
