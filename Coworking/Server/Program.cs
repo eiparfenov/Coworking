@@ -14,6 +14,7 @@ builder.Services.AddCodeFirstGrpc();
 builder.Services.AddDbContext<IApplicationDbContext,ApplicationDbContext>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IAdminEquipmentModelsService, AdminEquipmentModelsService>();
+builder.Services.AddScoped<IAdminEquipmentsService, AdminEquipmentsService>();
 
 var app = builder.Build();
 
@@ -37,7 +38,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseGrpcWeb();
 
-app.MapGrpcService<AdminEquipmentModelsGrpcService>().EnableGrpcWeb();
+app.MapGrpcService<AdminEquipmentsGrpcService>().EnableGrpcWeb();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");

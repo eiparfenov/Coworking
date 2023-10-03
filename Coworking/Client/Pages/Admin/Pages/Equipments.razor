@@ -1,12 +1,113 @@
-﻿@layout AdminMainLayout
+﻿@inherits AdminPage
 @page "/{department}/Admin/Equipments"
+@using Coworking.Shared.Services
+@using AntDesign.TableModels
 
-<Paragraph>Equipments</Paragraph>
-<Paragraph>@Department</Paragraph>
+@inject IAdminEquipmentsGrpcService AdminService
 
+<Table DataSource="EquipmentModelsList" TItem="EquipmentModelDto" Loading="EquipmentModelsList==null" OnExpand="OnTableExpand">
+    <ColumnDefinitions>
+        <PropertyColumn Property="c=>c.Name"/>
+        <PropertyColumn Property="c=>c.Description"/>
+        <ActionColumn Title="Действия">
+            <Space Direction="DirectionVHType.Horizontal">
+                <SpaceItem>
+                    <Button>Добавить оборудование</Button>
+                </SpaceItem>
+                <SpaceItem>
+                    <Button>Редактировать</Button>
+                </SpaceItem>
+                <SpaceItem>
+                    <Button Danger OnClick="() => EquipmentModelToDelete = context">Удалить</Button>
+                </SpaceItem>
+            </Space>
+        </ActionColumn>
+    </ColumnDefinitions>
+    
+    <ExpandTemplate Context="rowData">
+        <Table DataSource="rowData.Data.Equipments" TItem="EquipmentDto" Loading="rowData.Data.Equipments == null">
+            <ColumnDefinitions>
+                <PropertyColumn Property="c => c.InvNumber"></PropertyColumn>
+                <PropertyColumn Property="c => c.Comment"></PropertyColumn>
+                <ActionColumn Title="Действия">
+                    <Space Direction="DirectionVHType.Horizontal">
+                        <SpaceItem>
+                            <Button>Редактировать</Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button Danger OnClick="() => EquipmentToDelete = context">Удалить</Button>
+                        </SpaceItem>
+                    </Space>
+                </ActionColumn>
+            </ColumnDefinitions>
+        </Table>
+    </ExpandTemplate>
+</Table>
+
+<DeleteConfirmation TModel="EquipmentModelDto" 
+                    Model="EquipmentModelToDelete" 
+                    OnDelete="HandleEquipmentModelDelete"
+                    OnCancel="() => EquipmentModelToDelete = null">
+    Подтвердите удаление модели оборудования @EquipmentModelToDelete?.Name, это действие нельзя отменить. 
+</DeleteConfirmation>
+<DeleteConfirmation TModel="EquipmentDto"
+                    Model="EquipmentToDelete"
+                    OnDelete="HandleEquipmentDelete"
+                    OnCancel="() => EquipmentModelToDelete = null">
+    
+</DeleteConfirmation>
 @code {
 
     [Parameter]
     public string Department { get; set; } = null!;
+
+    public List<EquipmentModelDto>? EquipmentModelsList { get; set; }
+    
+    public EquipmentModelDto? EquipmentModelToDelete { get; set; }
+    public EquipmentDto? EquipmentToDelete { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new GetAllEquipmentModelsRequest()
+        {
+            DepartmentName = Department
+        };
+        var response = await AdminService.GetAllEquipmentModels(request);
+        EquipmentModelsList = response.EquipmentModels;
+    }
+
+    public async Task OnTableExpand(RowData<EquipmentModelDto> rowData)
+    {
+        if (rowData.Data.Equipments != null)
+        {
+            return;
+        }
+
+        var request = new GetEquipmentsForModelRequest()
+        {
+            DepartmentName = Department,
+            EquipmentModelId = rowData.Data.Id
+        };
+
+        var response = await AdminService.GetEquipmentsForModel(request);
+
+        rowData.Data.Equipments = response.Equipments;
+    }
+
+    private void HandleEquipmentModelDelete(EquipmentModelDto obj)
+    {
+        EquipmentModelsList?.Remove(obj);
+        EquipmentModelToDelete = null;
+    }
+
+    private void HandleEquipmentDelete(EquipmentDto obj)
+    {
+        var eqModel = EquipmentModelsList?.FirstOrDefault(x => x.Id == obj.EquipmentModelId);
+        if (eqModel != null)
+        {
+            eqModel.Equipments?.Remove(obj);
+        }
+        EquipmentToDelete = null;
+    }
 
 }

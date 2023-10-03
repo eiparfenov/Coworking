@@ -3,17 +3,16 @@
 
 <Layout>
     <Header>
-        <Header>Панель администратора @RouteLink("Example")</Header>    
+        <Header>Панель администратора</Header>    
     </Header>
     <Layout>
         <Sider>
             <Menu Mode="MenuMode.Inline">
-                <MenuItem RouterLink=@RouteLink("EquipmentModels")>Модели оборудования</MenuItem>
-                <MenuItem RouterLink=@RouteLink("Equipments")>Единицы оборудования</MenuItem>
+                <MenuItem RouterLink=@RouteLink("Equipments")>Оборудование</MenuItem>
                 <MenuItem RouterLink=@RouteLink("Workplaces")>Рабочие места</MenuItem>
             </Menu>
         </Sider>
-        <Content>
+        <Content Style="padding: 24px; margin: 0">
             @Body
         </Content>
     </Layout>

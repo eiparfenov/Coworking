@@ -1,0 +1,47 @@
+﻿@typeparam TModel
+
+@{
+    RenderFragment modalFooter =
+        @<Template>
+            <Button Danger OnClick="HandleDelete">Удалить</Button>
+            <Button OnClick="HandleCancel">Отмена</Button>
+        </Template>;
+}
+
+<Modal Visible="Model != null"
+       Title="Подтверждение"
+       OnCancel="HandleCancel"
+       Footer="modalFooter">
+    @ChildContent    
+</Modal>
+
+
+@code
+{
+    [Parameter]
+    public EventCallback<TModel> OnDelete { get; set; }
+    [Parameter]
+    public EventCallback<TModel> OnCancel { get; set; }
+
+    [Parameter] 
+    public TModel? Model { get; set; }
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private async Task HandleDelete()
+    {
+        if (OnDelete.HasDelegate)
+        {
+            await OnDelete.InvokeAsync(Model);
+        }
+    }
+
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+}

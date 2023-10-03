@@ -14,7 +14,13 @@ public class DepartmentService: IDepartmentService
 
     public async Task<int> GetDepartmentIdByName(string name)
     {
+        return 1;
         var department = await _db.Departments.FirstOrDefaultAsync(dep => dep.Name == name);
-        return department?.Id ?? 0;
+        
+        if (department == null)
+        {
+            throw new ArgumentException($"No department with name {name}", nameof(name));
+        }
+        return department.Id;
     }
 }

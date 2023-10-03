@@ -15,7 +15,10 @@ public class AdminEquipmentModelsService: IAdminEquipmentModelsService
 
     public async Task<List<EquipmentModel>> ReadAllEquipmentModels(int departmentId)
     {
-        var eqModels = _db.EquipmentModels.ToList();
+        var eqModels = await _db.EquipmentModels
+            .Where(eqModel => eqModel.DepartmentId == departmentId)
+            .ToListAsync();
+
         return eqModels;
     }
 
