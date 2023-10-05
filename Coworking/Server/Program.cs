@@ -15,6 +15,7 @@ builder.Services.AddDbContext<IApplicationDbContext,ApplicationDbContext>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IAdminEquipmentModelsService, AdminEquipmentModelsService>();
 builder.Services.AddScoped<IAdminEquipmentsService, AdminEquipmentsService>();
+builder.Services.AddScoped<IAdminWorkplacesService, AdminWorkplacesService>();
 
 var app = builder.Build();
 
@@ -39,6 +40,7 @@ app.UseRouting();
 app.UseGrpcWeb();
 
 app.MapGrpcService<AdminEquipmentsGrpcService>().EnableGrpcWeb();
+app.MapGrpcService<AdminWorkplacesGrpcService>().EnableGrpcWeb();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");

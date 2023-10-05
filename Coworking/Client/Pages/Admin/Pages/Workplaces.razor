@@ -1,0 +1,185 @@
+@using Coworking.Shared.Services
+@inherits AdminPage
+@page "/{department}/Admin/Workplaces"
+@inject IAdminWorkplacesGrpcService AdminService
+@inject IAdminEquipmentsGrpcService EquipmentsService
+
+<Table TItem="WorkplaceDto"
+       DataSource="WorkplacesList"
+       Loading="WorkplacesList == null">
+    <ColumnDefinitions>
+        <PropertyColumn Title="Название" Property="wp => wp.Name"/>
+        <PropertyColumn Title="Доступные модели оборудования" Property="wp => wp.EquipmentModelIds">
+            @foreach (var eqName in context.EquipmentModelIds!.Select(id => EquipmentModels[id].Name))
+            {
+                <Tag>@eqName</Tag>
+            }
+        </PropertyColumn>
+        <ActionColumn Title="Действия">
+            <Space Direction="DirectionVHType.Horizontal">
+                <SpaceItem>
+                    <Button OnClick="() => {WorkplaceToCreateOrUpdate = context; IsCreating = false;}">Редактировать</Button>
+                    <Button Danger OnClick="() => WorkplaceToDelete = context">Удалить</Button>
+                </SpaceItem>
+            </Space>
+        </ActionColumn>
+    </ColumnDefinitions>
+</Table>
+<Button OnClick="HandleCreateRequest">Добавить рабочее место</Button>
+<DeleteConfirmation TModel="WorkplaceDto"
+                    Model="WorkplaceToDelete"
+                    OnCancel="() => WorkplaceToDelete = null"
+                    OnDelete="HandleDelete">
+    Вы уверены, что хотите удалить рабочее место @WorkplaceToDelete?.Name? Это действие нельзя отменить.
+</DeleteConfirmation>
+<Drawer Visible="WorkplaceToCreateOrUpdate != null"
+        OnClose="() => WorkplaceToCreateOrUpdate = null"
+        Width="720">
+    <Form TModel="WorkplaceDto"
+          Model="WorkplaceToCreateOrUpdate ?? new WorkplaceDto(){EquipmentModelIds = new List<int>()}">
+        <FormItem Label="Название">
+            <Input TValue="string" @bind-Value="@context.Name"/>
+        </FormItem>
+        <FormItem Label="Доступное оборудование">
+            <Select
+               TItem="string"
+               TItemValue="string"
+               Mode="multiple"
+               >
+               <SelectOptions>
+                   @if (EquipmentModels != null)
+                   {
+                       foreach (var key in EquipmentModels.Keys)
+                       {
+                           <SelectOption 
+                               TItemValue="string" 
+                               TItem="string" 
+                               Value="key.ToString()" 
+                               Label="@EquipmentModels[key].Name"></SelectOption>
+
+                       }
+                   }
+               </SelectOptions>
+           </Select>
+        </FormItem>
+        <FormItem>
+            @if (IsCreating)
+            {
+                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleCreate">
+                    Добавить
+                </Button>
+            }
+            else
+            {
+                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleUpdate">
+                    Изменить
+                </Button>
+            }
+        </FormItem>
+    </Form>
+
+</Drawer>
+
+@code
+{
+    [Parameter]
+    public string Department { get; set; } = null!;
+
+    public List<WorkplaceDto>? WorkplacesList { get; set; }
+    public Dictionary<int, EquipmentModelDto>? EquipmentModels { get; set; }
+    
+    public WorkplaceDto? WorkplaceToCreateOrUpdate { get; set; }
+    public bool IsCreating { get; set; }
+    public WorkplaceDto? WorkplaceToDelete { get; set; }
+
+    public IEnumerable<string> SelectedValues { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new GetAllWorkplacesRequest()
+        {
+            DepartmentName = Department
+        };
+        var response = await AdminService.GetAllWorkplaces(request);
+
+        WorkplacesList = response.Workplaces ?? new List<WorkplaceDto>();
+        WorkplacesList.ForEach(wp => wp.EquipmentModelIds ??= new List<int>());
+
+
+        var eqRequest = new GetAllEquipmentModelsRequest()
+        {
+            DepartmentName = Department
+        };
+        var eqResponse = await EquipmentsService.GetAllEquipmentModels(eqRequest);
+
+        EquipmentModels = new Dictionary<int, EquipmentModelDto>( 
+            (eqResponse.EquipmentModels ?? new List<EquipmentModelDto>())
+            .Select(eqModel => new KeyValuePair<int,EquipmentModelDto>(eqModel.Id, eqModel))
+            );
+    }
+
+    private void HandleCreateRequest()
+    {
+        WorkplaceToCreateOrUpdate = new WorkplaceDto()
+        {
+            EquipmentModelIds = new List<int>()
+        };
+        IsCreating = true;
+    }
+
+    private async Task HandleDelete()
+    {
+        if (WorkplaceToDelete == null) return;
+
+        var request = new DeleteWorkplaceRequest()
+        {
+            DepartmentName = Department,
+            Id = WorkplaceToDelete.Id
+        };
+        var response = await AdminService.DeleteWorkplace(request);
+
+        WorkplacesList?.Remove(WorkplaceToDelete);
+        WorkplaceToDelete = null;
+    }
+
+    private async Task HandleUpdate()
+    {
+        if(WorkplaceToCreateOrUpdate == null) return;
+
+        var request = new UpdateWorkplaceRequest()
+        {
+            DepartmentName = Department,
+            Id = WorkplaceToCreateOrUpdate.Id,
+            EquipmentModelIds = WorkplaceToCreateOrUpdate.EquipmentModelIds,
+            Name = WorkplaceToCreateOrUpdate.Name
+        };
+        var response = await AdminService.UpdateWorkplace(request);
+
+        WorkplaceToCreateOrUpdate = null;
+    }
+
+    private async Task HandleCreate()
+    {
+        if(WorkplaceToCreateOrUpdate == null) return;
+
+        var request = new CreateWorkplaceRequest()
+        {
+            DepartmentName = Department,
+            EquipmentModelIds = WorkplaceToCreateOrUpdate.EquipmentModelIds,
+            Name = WorkplaceToCreateOrUpdate.Name
+        };
+
+        var response = await AdminService.CreateWorkplace(request);
+
+        WorkplaceToCreateOrUpdate.Id = response.Id;
+        WorkplacesList?.Add(WorkplaceToCreateOrUpdate);
+
+        WorkplaceToCreateOrUpdate = null;
+    }
+
+    private void OnSelectedValuesChanged(IEnumerable<int> obj)
+    {
+        if (WorkplaceToCreateOrUpdate == null) return;
+        WorkplaceToCreateOrUpdate!.EquipmentModelIds = obj.ToList();
+    }
+}

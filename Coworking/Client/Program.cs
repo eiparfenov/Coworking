@@ -15,5 +15,7 @@ var handler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler(
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = baseUri });
 builder.Services.AddCodeFirstGrpcClient<IAdminEquipmentsGrpcService>(options => options.Address = baseUri)
     .ConfigureChannel(o => o.HttpHandler = handler);
+builder.Services.AddCodeFirstGrpcClient<IAdminWorkplacesGrpcService>(options => options.Address = baseUri)
+    .ConfigureChannel(o => o.HttpHandler = handler);
 
 await builder.Build().RunAsync();
