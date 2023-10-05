@@ -13,10 +13,10 @@
         <ActionColumn Title="Действия">
             <Space Direction="DirectionVHType.Horizontal">
                 <SpaceItem>
-                    <Button OnClick="() => HandleEquipmentAddRequest(context)">Добавить оборудование</Button>
+                    <Button OnClick="() => HandleEquipmentCreateRequest(context)">Добавить оборудование</Button>
                 </SpaceItem>
                 <SpaceItem>
-                    <Button OnClick="() => { EquipmentModelToEditOrCreate = context; CreatingNew = false; }">Редактировать</Button>
+                    <Button OnClick="() => { EquipmentModelToUpdateOrCreate = context; CreatingNew = false; }">Редактировать</Button>
                 </SpaceItem>
                 <SpaceItem>
                     <Button Danger OnClick="() => EquipmentModelToDelete = context">Удалить</Button>
@@ -33,7 +33,7 @@
                 <ActionColumn Title="Действия">
                     <Space Direction="DirectionVHType.Horizontal">
                         <SpaceItem>
-                            <Button OnClick="() => { EquipmentToEditOrCreate = context; CreatingNew = false; }">Редактировать</Button>
+                            <Button OnClick="() => { EquipmentToUpdateOrCreate = context; CreatingNew = false; }">Редактировать</Button>
                         </SpaceItem>
                         <SpaceItem>
                             <Button Danger OnClick="() => EquipmentToDelete = context">Удалить</Button>
@@ -44,6 +44,7 @@
         </Table>
     </ExpandTemplate>
 </Table>
+<Button OnClick="() => { EquipmentModelToUpdateOrCreate = new EquipmentModelDto(); CreatingNew = true; }">Добавить новое оборудование</Button>
 
 <DeleteConfirmation TModel="EquipmentModelDto" 
                     Model="EquipmentModelToDelete" 
@@ -58,10 +59,10 @@
     Подтвердите удаление оборудования @EquipmentToDelete?.InvNumber, это действие нельзя отменить.
 </DeleteConfirmation>
 
-<Drawer Visible="EquipmentModelToEditOrCreate != null"
-        OnClose="() => EquipmentModelToEditOrCreate = null">
+<Drawer Visible="EquipmentModelToUpdateOrCreate != null"
+        OnClose="() => EquipmentModelToUpdateOrCreate = null">
     <Form TModel="EquipmentModelDto" 
-          Model="EquipmentModelToEditOrCreate ?? new EquipmentModelDto()">
+          Model="EquipmentModelToUpdateOrCreate ?? new EquipmentModelDto()">
         <FormItem Label="Название">
             <Input TValue="string" @bind-Value="@context.Name"/>
         </FormItem>
@@ -72,13 +73,13 @@
         <FormItem>
             @if (CreatingNew)
             {
-                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentModelAdd">
+                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentModelCreate">
                     Добавить
                 </Button>
             }
             else
             {
-                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentModelEdit">
+                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentModelUpdate">
                     Изменить
                 </Button>
             }
@@ -86,10 +87,10 @@
     </Form>
 </Drawer>
 
-<Drawer Visible="EquipmentToEditOrCreate != null"
-        OnClose="() => EquipmentToEditOrCreate = null">
+<Drawer Visible="EquipmentToUpdateOrCreate != null"
+        OnClose="() => EquipmentToUpdateOrCreate = null">
     <Form TModel="EquipmentDto" 
-          Model="EquipmentToEditOrCreate ?? new EquipmentDto()">
+          Model="EquipmentToUpdateOrCreate ?? new EquipmentDto()">
         <FormItem Label="Инвентарный номер">
             <Input TValue="string" @bind-Value="@context.InvNumber"/>
         </FormItem>
@@ -101,13 +102,13 @@
         <FormItem>
             @if (CreatingNew)
             {
-                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentAdd">
+                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentCreate">
                     Добавить
                 </Button>
             }
             else
             {
-                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentEdit">
+                <Button Type="@ButtonType.Primary" HtmlType="submit" OnClick="HandleEquipmentUpdate">
                     Изменить
                 </Button>
             }
@@ -125,12 +126,27 @@
     public EquipmentModelDto? EquipmentModelToDelete { get; set; }
     public EquipmentDto? EquipmentToDelete { get; set; }
 
-    public EquipmentModelDto? EquipmentModelToEditOrCreate { get; set; }
-    public EquipmentDto? EquipmentToEditOrCreate { get; set; }
+    public EquipmentModelDto? EquipmentModelToUpdateOrCreate { get; set; }
+    public EquipmentDto? EquipmentToUpdateOrCreate { get; set; }
     public bool CreatingNew { get; set; }
     
-    
     protected override async Task OnInitializedAsync()
+    {
+        await ReadEquipmentModels();
+    }
+    
+    public async Task OnTableExpand(RowData<EquipmentModelDto> rowData)
+    {
+        if (rowData.Data.Equipments != null) return;
+        
+        var eqModel = rowData.Data;
+        
+        await ReadEquipmentsForModel(eqModel);
+    }
+    
+    #region EquipmentModelCUD
+    
+    private async Task ReadEquipmentModels()
     {
         var request = new GetAllEquipmentModelsRequest()
         {
@@ -139,19 +155,74 @@
         var response = await AdminService.GetAllEquipmentModels(request);
         EquipmentModelsList = response.EquipmentModels;
     }
-
-    public async Task OnTableExpand(RowData<EquipmentModelDto> rowData)
+    
+    private async Task HandleEquipmentModelCreate()
     {
-        if (rowData.Data.Equipments != null)
+        if (EquipmentModelToUpdateOrCreate == null) return;
+
+        var request = new CreateEquipmentModelRequest()
         {
-            return;
-        }
-        var eqModel = rowData.Data;
-        
-        await LoadEquipmentsForModel(eqModel);
+            DepartmentName = Department,
+            Description = EquipmentModelToUpdateOrCreate.Description,
+            Id = EquipmentModelToUpdateOrCreate.Id,
+            Name = EquipmentModelToUpdateOrCreate.Name
+        };
+        var response = await AdminService.CreateEquipmentModel(request);
+        EquipmentModelToUpdateOrCreate.Id = response.Id;
+
+        EquipmentModelsList?.Add(EquipmentModelToUpdateOrCreate!);
+        EquipmentModelToUpdateOrCreate = null;
     }
 
-    private async Task LoadEquipmentsForModel(EquipmentModelDto eqModel)
+    private async Task HandleEquipmentModelUpdate()
+    {
+        if (EquipmentModelToUpdateOrCreate == null) return;
+
+        var request = new UpdateEquipmentModelRequest()
+        {
+            DepartmentName = Department,
+            Description = EquipmentModelToUpdateOrCreate.Description,
+            Id = EquipmentModelToUpdateOrCreate.Id,
+            Name = EquipmentModelToUpdateOrCreate.Name
+        };
+        var response = await AdminService.UpdateEquipmentModel(request);
+        
+        EquipmentModelToUpdateOrCreate = null;
+    }
+
+    private async Task HandleEquipmentModelDelete(EquipmentModelDto obj)
+    {
+        if (EquipmentModelToDelete == null) return;
+
+        var request = new DeleteEquipmentModelRequest()
+        {
+            DepartmentName = Department,
+            EquipmentModelId = EquipmentModelToDelete.Id
+        };
+        var response = await AdminService.DeleteEquipmentModel(request);
+
+        EquipmentModelsList?.Remove(obj);
+        EquipmentModelToDelete = null;
+    }
+
+    #endregion
+    
+    #region EquipmentCUD
+    
+    private async Task HandleEquipmentCreateRequest(EquipmentModelDto model)
+    {
+        CreatingNew = true;
+        if (model.Equipments == null)
+        {
+            await ReadEquipmentsForModel(model);
+        }
+        EquipmentToUpdateOrCreate = new EquipmentDto()
+        {
+            EquipmentModelId = model.Id
+        };
+    }
+
+    private async Task ReadEquipmentsForModel(EquipmentModelDto eqModel)
     {
         var request = new GetEquipmentsForModelRequest()
         {
@@ -161,17 +232,61 @@
 
         var response = await AdminService.GetEquipmentsForModel(request);
 
-        eqModel.Equipments = response.Equipments;
+        eqModel.Equipments = response.Equipments ?? new List<EquipmentDto>();
+    }
+    
+    private async Task HandleEquipmentCreate()
+    {
+        if (EquipmentToUpdateOrCreate == null) return;
+
+        var request = new CreateEquipmentRequest()
+        {
+            Comment = EquipmentToUpdateOrCreate.Comment,
+            DepartmentName = Department,
+            EquipmentModelId = EquipmentToUpdateOrCreate.EquipmentModelId,
+            InvNumber = EquipmentToUpdateOrCreate.InvNumber
+        };
+        var response = await AdminService.CreateEquipment(request);
+        EquipmentToUpdateOrCreate.Id = response.Id;
+        
+        var eqModel = EquipmentModelsList?
+            .FirstOrDefault(eqM => eqM.Id == EquipmentToUpdateOrCreate?.EquipmentModelId);
+        if (eqModel == null)
+        {
+            await Message.Error("Что-то пошло не так");
+            return;
+        }
+        eqModel.Equipments!.Add(EquipmentToUpdateOrCreate!);
+        EquipmentToUpdateOrCreate = null;
     }
 
-    private void HandleEquipmentModelDelete(EquipmentModelDto obj)
+    private async Task HandleEquipmentUpdate()
     {
-        EquipmentModelsList?.Remove(obj);
-        EquipmentModelToDelete = null;
-    }
+        if (EquipmentToUpdateOrCreate == null) return;
 
-    private void HandleEquipmentDelete(EquipmentDto obj)
+        var request = new UpdateEquipmentRequest()
+        {
+            Comment = EquipmentToUpdateOrCreate.Comment,
+            DepartmentName = Department,
+            Id = EquipmentToUpdateOrCreate.Id,
+            InvNumber = EquipmentToUpdateOrCreate.InvNumber
+        };
+        var response = await AdminService.UpdateEquipment(request);
+        
+        EquipmentToUpdateOrCreate = null;
+    }
+    
+    private async Task HandleEquipmentDelete(EquipmentDto obj)
     {
+        if (EquipmentToDelete == null) return;
+
+        var request = new DeleteEquipmentRequest()
+        {
+            DepartmentName = Department,
+            EquipmentId = EquipmentToDelete.Id
+        };
+        var response = await AdminService.DeleteEquipment(request);
+        
         var eqModel = EquipmentModelsList?.FirstOrDefault(x => x.Id == obj.EquipmentModelId);
         if (eqModel != null)
         {
@@ -179,50 +294,6 @@
         }
         EquipmentToDelete = null;
     }
-
-    private void HandleEquipmentModelAdd()
-    {
-        EquipmentModelsList?.Add(EquipmentModelToEditOrCreate!);
-        EquipmentModelToEditOrCreate = null;
-    }
-
-    private void HandleEquipmentModelEdit()
-    {
-        EquipmentModelToEditOrCreate = null;
-    }
-
-    private async Task HandleEquipmentAddRequest(EquipmentModelDto model)
-    {
-        CreatingNew = true;
-        if (model.Equipments == null)
-        {
-            await LoadEquipmentsForModel(model);
-        }
-        EquipmentToEditOrCreate = new EquipmentDto()
-        {
-            EquipmentModelId = model.Id
-        };
-    }
-
-    private async Task HandleEquipmentAdd()
-    {
-        var eqModel = EquipmentModelsList?
-            .FirstOrDefault(eqM => eqM.Id == EquipmentToEditOrCreate?.EquipmentModelId);
-
-        if (eqModel == null)
-        {
-            await Message.Error("Что-то пошло не так");
-            return;
-        }
-        
-        eqModel.Equipments!.Add(EquipmentToEditOrCreate!);
-
-        EquipmentToEditOrCreate = null;
-    }
-
-    private void HandleEquipmentEdit()
-    {
-        EquipmentToEditOrCreate = null;
-    }
-
+    
+    #endregion
 }

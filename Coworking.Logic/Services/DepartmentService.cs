@@ -14,7 +14,6 @@ public class DepartmentService: IDepartmentService
 
     public async Task<int> GetDepartmentIdByName(string name)
     {
-        return 1;
         var department = await _db.Departments.FirstOrDefaultAsync(dep => dep.Name == name);
         
         if (department == null)

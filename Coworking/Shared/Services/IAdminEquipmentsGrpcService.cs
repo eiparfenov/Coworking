@@ -5,17 +5,27 @@ using ProtoBuf.Grpc.Configuration;
 namespace Coworking.Shared.Services;
 
 
-[Service("rtu-tc.admin.equipment-models")]
+[Service("rtu-tc.admin.equipments")]
 public interface IAdminEquipmentsGrpcService
 {
     Task<GetAllEquipmentModelsResponse> GetAllEquipmentModels(GetAllEquipmentModelsRequest request, CallContext context = default!);
     Task<GetEquipmentForModelResponse> GetEquipmentsForModel(GetEquipmentsForModelRequest request, CallContext context = default!);
     Task<DeleteEquipmentModelResponse> DeleteEquipmentModel(DeleteEquipmentModelRequest request, CallContext callContext = default!);
     Task<DeleteEquipmentResponse> DeleteEquipment(DeleteEquipmentRequest request, CallContext callContext = default!);
+    Task<UpdateEquipmentModelResponse> UpdateEquipmentModel(UpdateEquipmentModelRequest request, CallContext callContext = default!);
+    Task<UpdateEquipmentResponse> UpdateEquipment(UpdateEquipmentRequest request, CallContext callContext = default!);
+    Task<CreateEquipmentModelResponse> CreateEquipmentModel(CreateEquipmentModelRequest request, CallContext callContext = default!);
+    Task<CreateEquipmentResponse> CreateEquipment(CreateEquipmentRequest request, CallContext callContext = default!);
+    
 }
+
 #region GetAllEquipmentModels
+
 [ProtoContract]
-public class GetAllEquipmentModelsRequest: DepartmentMatchedRequest { }
+public class GetAllEquipmentModelsRequest
+{
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
+}
 
 [ProtoContract]
 public class EquipmentModelDto
@@ -36,8 +46,10 @@ public class GetAllEquipmentModelsResponse
 
 #region GetEquipmentsForModel
 [ProtoContract]
-public class GetEquipmentsForModelRequest : DepartmentMatchedRequest
+public class GetEquipmentsForModelRequest
 {
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
+
     [ProtoMember(2)] public int EquipmentModelId { get; set; }
 }
 
@@ -60,72 +72,109 @@ public class GetEquipmentForModelResponse
 #region DeleteEqipmentModel
 
 [ProtoContract]
-public class DeleteEquipmentModelRequest : DepartmentMatchedRequest
+public class DeleteEquipmentModelRequest
 {
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
     [ProtoMember(2)] public int EquipmentModelId { get; set; }
 }
 
 [ProtoContract]
-[ProtoInclude(2, typeof(DeleteEquipmentModelResponseFailed))]
-[ProtoInclude(3, typeof(DeleteEquipmentModelResponseSuccess))]
 public class DeleteEquipmentModelResponse
 {
     
-}
-
-[ProtoContract]
-public class DeleteEquipmentModelResponseSuccess: DeleteEquipmentModelResponse
-{
-    
-}
-
-[ProtoContract]
-public class DeleteEquipmentModelResponseFailed: DeleteEquipmentModelResponse
-{
-    [ProtoMember(1)] public string? ErrorMessage { get; set; }
 }
 
 #endregion
 
 #region DeletEqipment
 [ProtoContract]
-public class DeleteEquipmentRequest : DepartmentMatchedRequest
+public class DeleteEquipmentRequest
 {
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
     [ProtoMember(2)] public int EquipmentId { get; set; }
 }
 
 [ProtoContract]
-[ProtoInclude(2, typeof(DeleteEquipmentResponseFailed))]
-[ProtoInclude(3, typeof(DeleteEquipmentResponseSuccess))]
 public class DeleteEquipmentResponse
 {
     
 }
 
+#endregion
+
+#region UpdateEquipmentModel
+
 [ProtoContract]
-public class DeleteEquipmentResponseSuccess: DeleteEquipmentResponse
+public class UpdateEquipmentModelRequest
+{
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
+    [ProtoMember(2)] public int Id { get; set; }
+    [ProtoMember(3)] public string? Name { get; set; }
+    [ProtoMember(4)] public string? Description { get; set; }
+}
+
+[ProtoContract]
+public class UpdateEquipmentModelResponse
 {
     
 }
 
-[ProtoContract]
-public class DeleteEquipmentResponseFailed: DeleteEquipmentResponse
-{
-    [ProtoMember(1)] public string? ErrorMessage { get; set; }
-}
 #endregion
 
-#region EditEquipmentModel
+#region UpdateEquipment
 
 [ProtoContract]
-public class EditEquipmentModelRequest
+public class UpdateEquipmentRequest
 {
-    public int Id { get; set; }
-    public string? Name { get; set; }
-    public string? Comment { get; set; }
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
+
+    [ProtoMember(2)] public int Id { get; set; }
+    [ProtoMember(3)] public string? InvNumber { get; set; }
+    [ProtoMember(4)] public string? Comment { get; set; }
 }
 
 [ProtoContract]
-public class EditEquipmentModel
+public class UpdateEquipmentResponse
+{
+    
+}
+
+#endregion
+
+#region CreateEquipmentModel
+
+[ProtoContract]
+public class CreateEquipmentModelRequest
+{
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
+    [ProtoMember(2)] public int Id { get; set; }
+    [ProtoMember(3)] public string? Name { get; set; }
+    [ProtoMember(4)] public string? Description { get; set; }
+}
+
+[ProtoContract]
+public class CreateEquipmentModelResponse
+{
+    [ProtoMember(1)] public int Id { get; set; }
+}
+
+#endregion
+
+#region CreateEquipment
+
+[ProtoContract]
+public class CreateEquipmentRequest
+{
+    [ProtoMember(1)] public string? DepartmentName { get; set; }
+    [ProtoMember(2)] public string? InvNumber { get; set; }
+    [ProtoMember(3)] public string? Comment { get; set; }
+    [ProtoMember(4)] public int EquipmentModelId { get; set; }
+}
+
+[ProtoContract]
+public class CreateEquipmentResponse
+{
+    [ProtoMember(1)] public int Id { get; set; }
+}
 
 #endregion

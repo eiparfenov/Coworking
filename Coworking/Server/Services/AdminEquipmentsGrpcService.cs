@@ -30,17 +30,10 @@ public class AdminEquipmentsGrpcService: IAdminEquipmentsGrpcService
         };
     }
 
-    public async Task<DeleteEquipmentModelResponse> DeleteEquipmentModel(DeleteEquipmentModelRequest request, CallContext callContext = default)
-    {
-        var departmentId = await GetDepartmentId(request);
-        await _equipmentModelsService.DeleteEquipmentModel(request.EquipmentModelId, departmentId);
-
-        return new DeleteEquipmentModelResponseSuccess();
-    }
 
     public async Task<GetEquipmentForModelResponse> GetEquipmentsForModel(GetEquipmentsForModelRequest request, CallContext context = default)
     {
-        var departmentId = await GetDepartmentId(request);
+        var departmentId = await GetDepartmentId(request.DepartmentName);
         var eqs = await _equipmentsService.ReadAllEquipments(departmentId, request.EquipmentModelId);
 
         return new GetEquipmentForModelResponse()
@@ -51,16 +44,52 @@ public class AdminEquipmentsGrpcService: IAdminEquipmentsGrpcService
         };
     }
 
+    public async Task<DeleteEquipmentModelResponse> DeleteEquipmentModel(DeleteEquipmentModelRequest request, CallContext callContext = default)
+    {
+        var departmentId = await GetDepartmentId(request.DepartmentName);
+        await _equipmentModelsService.DeleteEquipmentModel(request.EquipmentModelId, departmentId);
+
+        return new DeleteEquipmentModelResponse();
+    }
     public async Task<DeleteEquipmentResponse> DeleteEquipment(DeleteEquipmentRequest request, CallContext callContext = default)
     {
         var departmentId = await _departmentService.GetDepartmentIdByName(request.DepartmentName);
         await _equipmentsService.DeleteEquipment(request.EquipmentId, departmentId);
 
-        return new DeleteEquipmentResponseSuccess();
+        return new DeleteEquipmentResponse();
     }
 
-    private Task<int> GetDepartmentId(DepartmentMatchedRequest request)
+    public async Task<UpdateEquipmentModelResponse> UpdateEquipmentModel(UpdateEquipmentModelRequest request, CallContext callContext = default)
     {
-        return _departmentService.GetDepartmentIdByName(request.DepartmentName);
+        var departmentId = await GetDepartmentId(request.DepartmentName);
+        await _equipmentModelsService.UpdateEquipmentModel(request.Id, departmentId, request.Name, request.Description);
+
+        return new UpdateEquipmentModelResponse();
     }
+
+    public async Task<UpdateEquipmentResponse> UpdateEquipment(UpdateEquipmentRequest request, CallContext callContext = default)
+    {
+        var departmentId = await GetDepartmentId(request.DepartmentName);
+        await _equipmentsService.UpdateEquipment(request.Id, departmentId, request.InvNumber, request.Comment);
+
+        return new UpdateEquipmentResponse();
+    }
+
+    public async Task<CreateEquipmentModelResponse> CreateEquipmentModel(CreateEquipmentModelRequest request, CallContext callContext = default)
+    {
+        var departmentId = await GetDepartmentId(request.DepartmentName);
+        var id = await _equipmentModelsService.CreateEquipmentModel(request.Name, request.Description, departmentId);
+
+        return new CreateEquipmentModelResponse() { Id = id };
+    }
+
+    public async Task<CreateEquipmentResponse> CreateEquipment(CreateEquipmentRequest request, CallContext callContext = default)
+    {
+        var departmentId = await GetDepartmentId(request.DepartmentName);
+        var id = await _equipmentsService.CreateEquipment(request.InvNumber, request.Comment, request.EquipmentModelId, departmentId);
+
+        return new CreateEquipmentResponse() { Id = id };
+    }
+
+    private Task<int> GetDepartmentId(string departmentName) => _departmentService.GetDepartmentIdByName(departmentName);
 }
