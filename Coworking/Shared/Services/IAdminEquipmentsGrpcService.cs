@@ -115,3 +115,17 @@ public class DeleteEquipmentResponseFailed: DeleteEquipmentResponse
 }
 #endregion
 
+#region EditEquipmentModel
+
+[ProtoContract]
+public class EditEquipmentModelRequest
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public string? Comment { get; set; }
+}
+
+[ProtoContract]
+public class EditEquipmentModel
+
+#endregion
