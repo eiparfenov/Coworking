@@ -11,6 +11,7 @@ public interface IAdminEquipmentsGrpcService
     Task<GetAllEquipmentModelsResponse> GetAllEquipmentModels(GetAllEquipmentModelsRequest request, CallContext context = default!);
     Task<GetEquipmentForModelResponse> GetEquipmentsForModel(GetEquipmentsForModelRequest request, CallContext context = default!);
     Task<DeleteEquipmentModelResponse> DeleteEquipmentModel(DeleteEquipmentModelRequest request, CallContext callContext = default!);
+    Task<DeleteEquipmentResponse> DeleteEquipment(DeleteEquipmentRequest request, CallContext callContext = default!);
 }
 #region GetAllEquipmentModels
 [ProtoContract]
@@ -85,3 +86,32 @@ public class DeleteEquipmentModelResponseFailed: DeleteEquipmentModelResponse
 }
 
 #endregion
+
+#region DeletEqipment
+[ProtoContract]
+public class DeleteEquipmentRequest : DepartmentMatchedRequest
+{
+    [ProtoMember(2)] public int EquipmentId { get; set; }
+}
+
+[ProtoContract]
+[ProtoInclude(2, typeof(DeleteEquipmentResponseFailed))]
+[ProtoInclude(3, typeof(DeleteEquipmentResponseSuccess))]
+public class DeleteEquipmentResponse
+{
+    
+}
+
+[ProtoContract]
+public class DeleteEquipmentResponseSuccess: DeleteEquipmentResponse
+{
+    
+}
+
+[ProtoContract]
+public class DeleteEquipmentResponseFailed: DeleteEquipmentResponse
+{
+    [ProtoMember(1)] public string? ErrorMessage { get; set; }
+}
+#endregion
+

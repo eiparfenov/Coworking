@@ -51,6 +51,14 @@ public class AdminEquipmentsGrpcService: IAdminEquipmentsGrpcService
         };
     }
 
+    public async Task<DeleteEquipmentResponse> DeleteEquipment(DeleteEquipmentRequest request, CallContext callContext = default)
+    {
+        var departmentId = await _departmentService.GetDepartmentIdByName(request.DepartmentName);
+        await _equipmentsService.DeleteEquipment(request.EquipmentId, departmentId);
+
+        return new DeleteEquipmentResponseSuccess();
+    }
+
     private Task<int> GetDepartmentId(DepartmentMatchedRequest request)
     {
         return _departmentService.GetDepartmentIdByName(request.DepartmentName);
