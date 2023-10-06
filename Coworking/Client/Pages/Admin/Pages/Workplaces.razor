@@ -18,7 +18,10 @@
         <ActionColumn Title="Действия">
             <Space Direction="DirectionVHType.Horizontal">
                 <SpaceItem>
-                    <Button OnClick="() => {WorkplaceToCreateOrUpdate = context; IsCreating = false;}">Редактировать</Button>
+                    <Button OnClick="() => {
+                        WorkplaceToCreateOrUpdate = context; 
+                        IsCreating = false;
+                    }">Редактировать</Button>
                     <Button Danger OnClick="() => WorkplaceToDelete = context">Удалить</Button>
                 </SpaceItem>
             </Space>
@@ -45,6 +48,8 @@
                TItem="string"
                TItemValue="string"
                Mode="multiple"
+               DefaultValues="WorkplaceToCreateOrUpdate?.EquipmentModelIds!.Select(x => x.ToString()).ToList()"
+               OnSelectedItemsChanged="OnSelectedValuesChanged"
                >
                <SelectOptions>
                    @if (EquipmentModels != null)
@@ -92,7 +97,7 @@
     public bool IsCreating { get; set; }
     public WorkplaceDto? WorkplaceToDelete { get; set; }
 
-    public IEnumerable<string> SelectedValues { get; set; }
+    public List<int>? SelectorSelectedValues { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
@@ -146,6 +151,12 @@
     {
         if(WorkplaceToCreateOrUpdate == null) return;
 
+        if (SelectorSelectedValues != null)
+        {
+            WorkplaceToCreateOrUpdate.EquipmentModelIds = SelectorSelectedValues;
+        }
+        SelectorSelectedValues = null;
+        
         var request = new UpdateWorkplaceRequest()
         {
             DepartmentName = Department,
@@ -162,6 +173,13 @@
     {
         if(WorkplaceToCreateOrUpdate == null) return;
 
+        if (SelectorSelectedValues != null)
+        {
+            WorkplaceToCreateOrUpdate.EquipmentModelIds = SelectorSelectedValues;
+        }
+        SelectorSelectedValues = null;
+
+
         var request = new CreateWorkplaceRequest()
         {
             DepartmentName = Department,
@@ -177,9 +195,10 @@
         WorkplaceToCreateOrUpdate = null;
     }
 
-    private void OnSelectedValuesChanged(IEnumerable<int> obj)
+    private void OnSelectedValuesChanged(IEnumerable<string> obj)
     {
         if (WorkplaceToCreateOrUpdate == null) return;
-        WorkplaceToCreateOrUpdate!.EquipmentModelIds = obj.ToList();
+        
+        SelectorSelectedValues = obj.Select(x => int.Parse(x)).ToList();
     }
 }

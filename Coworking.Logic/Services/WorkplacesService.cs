@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Coworking.Logic.Services;
 
-public class AdminWorkplacesService: IAdminWorkplacesService
+public class WorkplacesService: IWorkplacesService
 {
     private readonly IApplicationDbContext _db;
 
-    public AdminWorkplacesService(IApplicationDbContext db)
+    public WorkplacesService(IApplicationDbContext db)
     {
         _db = db;
     }

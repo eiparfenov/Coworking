@@ -8,19 +8,19 @@ namespace Coworking.Server.Services;
 
 public class AdminWorkplacesGrpcService: IAdminWorkplacesGrpcService
 {
-    private readonly IAdminWorkplacesService _adminService;
+    private readonly IWorkplacesService _service;
     private readonly IDepartmentService _departmentService;
 
-    public AdminWorkplacesGrpcService(IAdminWorkplacesService adminService, IDepartmentService departmentService)
+    public AdminWorkplacesGrpcService(IWorkplacesService service, IDepartmentService departmentService)
     {
-        _adminService = adminService;
+        _service = service;
         _departmentService = departmentService;
     }
 
     public async Task<GetAllWorkplacesResponse> GetAllWorkplaces(GetAllWorkplacesRequest request, CallContext context = default)
     {
         var departmentId = await _departmentService.GetDepartmentIdByName(request.DepartmentName!);
-        var workplaces = await _adminService.GetAllWorkplaces(departmentId);
+        var workplaces = await _service.GetAllWorkplaces(departmentId);
 
         return new GetAllWorkplacesResponse()
         {
@@ -40,7 +40,7 @@ public class AdminWorkplacesGrpcService: IAdminWorkplacesGrpcService
     public async Task<CreateWorkplaceResponse> CreateWorkplace(CreateWorkplaceRequest request, CallContext context = default)
     {
         var departmentId = await _departmentService.GetDepartmentIdByName(request.DepartmentName!);
-        var workplaceId = await _adminService.CreateWorkplace(departmentId, request.Name!, request.EquipmentModelIds!);
+        var workplaceId = await _service.CreateWorkplace(departmentId, request.Name!, request.EquipmentModelIds!);
 
         return new CreateWorkplaceResponse()
         {
@@ -51,7 +51,7 @@ public class AdminWorkplacesGrpcService: IAdminWorkplacesGrpcService
     public async Task<UpdateWorkplaceResponse> UpdateWorkplace(UpdateWorkplaceRequest request, CallContext context = default)
     {
         var departmentId = await _departmentService.GetDepartmentIdByName(request.DepartmentName!);
-        await _adminService.UpdateWorkplace(departmentId, request.Id, request.Name!, request.EquipmentModelIds!);
+        await _service.UpdateWorkplace(departmentId, request.Id, request.Name!, request.EquipmentModelIds!);
 
         return new UpdateWorkplaceResponse();
     }
@@ -59,7 +59,7 @@ public class AdminWorkplacesGrpcService: IAdminWorkplacesGrpcService
     public async Task<DeleteWorkplaceResponse> DeleteWorkplace(DeleteWorkplaceRequest request, CallContext context = default)
     {
         var departmentId = await _departmentService.GetDepartmentIdByName(request.DepartmentName!);
-        await _adminService.DeleteWorkplace(departmentId, request.Id);
+        await _service.DeleteWorkplace(departmentId, request.Id);
 
         return new DeleteWorkplaceResponse();
     }

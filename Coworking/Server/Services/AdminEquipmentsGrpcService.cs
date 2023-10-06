@@ -7,10 +7,10 @@ namespace Coworking.Server.Services;
 
 public class AdminEquipmentsGrpcService: IAdminEquipmentsGrpcService
 {
-    private readonly IAdminEquipmentModelsService _equipmentModelsService;
-    private readonly IAdminEquipmentsService _equipmentsService;
+    private readonly IEquipmentModelsService _equipmentModelsService;
+    private readonly IEquipmentsService _equipmentsService;
     private readonly IDepartmentService _departmentService;
-    public AdminEquipmentsGrpcService(IAdminEquipmentModelsService equipmentModelsService, IDepartmentService departmentService, IAdminEquipmentsService equipmentsService)
+    public AdminEquipmentsGrpcService(IEquipmentModelsService equipmentModelsService, IDepartmentService departmentService, IEquipmentsService equipmentsService)
     {
         _equipmentModelsService = equipmentModelsService;
         _departmentService = departmentService;

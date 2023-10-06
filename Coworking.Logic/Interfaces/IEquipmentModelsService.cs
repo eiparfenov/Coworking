@@ -2,7 +2,7 @@
 
 namespace Coworking.Logic.Interfaces;
 
-public interface IAdminEquipmentModelsService
+public interface IEquipmentModelsService
 {
     Task<List<EquipmentModel>> ReadAllEquipmentModels(int departmentId);
     Task<EquipmentModel> ReadEquipmentModel(int equipmentModelId, int departmentId);

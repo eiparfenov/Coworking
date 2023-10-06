@@ -2,7 +2,7 @@ using Coworking.Domain.Models;
 
 namespace Coworking.Logic.Interfaces;
 
-public interface IAdminWorkplacesService
+public interface IWorkplacesService
 {
     Task<List<Workplace>> GetAllWorkplaces(int departmentId);
     Task<Workplace> GetWorkplace(int departmentId, int workplaceId);

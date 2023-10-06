@@ -13,9 +13,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddCodeFirstGrpc();
 builder.Services.AddDbContext<IApplicationDbContext,ApplicationDbContext>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IAdminEquipmentModelsService, AdminEquipmentModelsService>();
-builder.Services.AddScoped<IAdminEquipmentsService, AdminEquipmentsService>();
-builder.Services.AddScoped<IAdminWorkplacesService, AdminWorkplacesService>();
+builder.Services.AddScoped<IEquipmentModelsService, EquipmentModelsService>();
+builder.Services.AddScoped<IEquipmentsService, EquipmentsService>();
+builder.Services.AddScoped<IWorkplacesService, WorkplacesService>();
 
 var app = builder.Build();
 

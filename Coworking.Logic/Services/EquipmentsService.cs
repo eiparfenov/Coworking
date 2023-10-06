@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Coworking.Logic.Services;
 
-public class AdminEquipmentsService: IAdminEquipmentsService
+public class EquipmentsService: IEquipmentsService
 {
     private readonly IApplicationDbContext _db;
-    private readonly IAdminEquipmentModelsService _equipmentModelsService;
+    private readonly IEquipmentModelsService _equipmentModelsService;
 
-    public AdminEquipmentsService(IApplicationDbContext db, IAdminEquipmentModelsService equipmentModelsService)
+    public EquipmentsService(IApplicationDbContext db, IEquipmentModelsService equipmentModelsService)
     {
         _db = db;
         _equipmentModelsService = equipmentModelsService;
